@@ -9,6 +9,7 @@ const MessageQueueClient = require('../libraries/message-queue-client');
 const axiosHTTPClient = axios.create();
 axiosRetry(axiosHTTPClient, { retries: 3 });
 
+
 module.exports.addOrder = async function (newOrder) {
   // validation
   if (!newOrder.productId) {
