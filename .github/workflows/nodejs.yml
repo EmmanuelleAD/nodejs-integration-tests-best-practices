@@ -1,6 +1,3 @@
-# This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
-
 name: Node.js CI
 
 on:
@@ -15,104 +12,58 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-    - name: Read .nvmrc
-      run: echo "##[set-output name=NVMRC;]$(cat .nvmrc)"
-      id: nvm
+      - name: Read .nvmrc
+        run: echo "##[set-output name=NVMRC;]$(cat .nvmrc)"
+        id: nvm
 
-    - name: Use Node.js (.nvmrc)
-      uses: actions/setup-node@v2
-      with:
-        node-version: "${{ steps.nvm.outputs.NVMRC }}"
-
-    - name: Cache node_modules
-      uses : actions/cache@v3
-      with:
-        path: node_modules
-        key: ${{runner.os}}-node-modules-${{hashFiles('**/package-lock.json')}} #ainsi le cache est invalide si le fichier package-lock.json change
-        restore-keys: |
-          ${{runner.os}}-node-modules-
-          
-      
-
-    - run: | 
-        sudo apt-get update
-        sudo apt-get install -y docker-compose
-       
-
-    - run: npm i
-  test-generic:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - uses: KengoTODA/actions-setup-docker-compose@v1
-        with:
-          version: '2.14.2'
-      - name: Use Node.js
+      - name: Use Node.js (.nvmrc)
         uses: actions/setup-node@v2
         with:
-          node-version: "${{needs.build.outputs.NVMRC}}"
-      - name: Cache node_modules
+          node-version: "${{ steps.nvm.outputs.NVMRC }}"
+
+      - name: Cache Node.js modules
         uses: actions/cache@v3
         with:
           path: node_modules
-          key: ${{runner.os}}-node-modules-${{hashFiles('**/package-lock.json')}} #ainsi le cache est invalide si le fichier package-lock.json change
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            ${{runner.os}}-node-modules-
+            ${{ runner.os }}-node-modules-
 
-      - run: |
+      - name: Install Docker Compose
+        run: |
           sudo apt-get update
           sudo apt-get install -y docker-compose
 
-      - run: npm test
-  test-nestjs:
-    runs-on: ubuntu-latest
+      - run: npm i
+
+  test:
     needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        test-suite: [ "test", "test:nestjs", "test:mocha" ]
+
     steps:
+      - uses: actions/checkout@v2
       - uses: KengoTODA/actions-setup-docker-compose@v1
         with:
           version: '2.14.2'
-      - name: Use Node.js
+
+      - name: Use Node.js (.nvmrc)
         uses: actions/setup-node@v2
         with:
-          node-version: "${{needs.build.outputs.NVMRC}}"
-      - name: Cache node_modules
+          node-version: "${{ needs.build.outputs.NVMRC }}"
+
+      - name: Cache Node.js modules (for tests)
         uses: actions/cache@v3
         with:
           path: node_modules
-          key: ${{runner.os}}-node-modules-${{hashFiles('**/package-lock.json')}} #ainsi le cache est invalide si le fichier package-lock.json change
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            ${{runner.os}}-node-modules-
-
-      - run: |
-          sudo apt-get update
-          sudo apt-get install -y docker-compose
-
-      - run: npm run test:nestjs
-  test-mocha:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - uses: KengoTODA/actions-setup-docker-compose@v1
-        with:
-          version: '2.14.2'
-      - name: Use Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: "${{needs.build.outputs.NVMRC}}"
-      - name: Cache node_modules
-        uses: actions/cache@v3
-        with:
-          path: node_modules
-          key: ${{runner.os}}-node-modules-${{hashFiles('**/package-lock.json')}} #ainsi le cache est invalide si le fichier package-lock.json change
-          restore-keys: |
-            ${{runner.os}}-node-modules-
-
-      - run: |
-          sudo apt-get update
-          sudo apt-get install -y docker-compose
-
-      - run: npm run test:mocha
+            ${{ runner.os }}-node-modules-
 
 
+      - name: Run ${{ matrix.test-suite }}
+        run: npm run ${{ matrix.test-suite }}
