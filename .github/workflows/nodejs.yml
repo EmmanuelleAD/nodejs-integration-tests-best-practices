@@ -26,6 +26,16 @@ jobs:
       with:
         node-version: "${{ steps.nvm.outputs.NVMRC }}"
 
+    - name: Cache node_modules
+      uses : actions/cache@v3
+      with:
+        path: node_modules
+        key: ${{runner.os}}-node-modules-${{hashFiles('**/package-lock.json')}} #ainsi le cache est invalide si le fichier package-lock.json change
+        restore-keys: |
+          ${{runner.os}}-node-modules-
+          
+      
+
     - run: | 
         sudo apt-get update
         sudo apt-get install -y docker-compose
