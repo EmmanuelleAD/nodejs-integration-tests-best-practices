@@ -46,13 +46,21 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
-      - uses: actions/KengoTODA/actions-setup-docker-compose@v1@v2
+      - uses: actions/KengoTODA/actions-setup-docker-compose@v1
         with:
           version: '2.14.2'
       - name: Use Node.js
         uses: actions/setup-node@v2
         with:
           node-version: "${{needs.build.outputs.NVMRC}}"
+      - name: Cache node_modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{runner.os}}-node-modules-${{hashFiles('**/package-lock.json')}} #ainsi le cache est invalide si le fichier package-lock.json change
+          restore-keys: |
+            ${{runner.os}}-node-modules-
+
       - run: |
           sudo apt-get update
           sudo apt-get install -y docker-compose
@@ -62,13 +70,21 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
-      - uses: actions/KengoTODA/actions-setup-docker-compose@v1@v2
+      - uses: actions/KengoTODA/actions-setup-docker-compose@v1
         with:
           version: '2.14.2'
       - name: Use Node.js
         uses: actions/setup-node@v2
         with:
           node-version: "${{needs.build.outputs.NVMRC}}"
+      - name: Cache node_modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{runner.os}}-node-modules-${{hashFiles('**/package-lock.json')}} #ainsi le cache est invalide si le fichier package-lock.json change
+          restore-keys: |
+            ${{runner.os}}-node-modules-
+
       - run: |
           sudo apt-get update
           sudo apt-get install -y docker-compose
@@ -78,13 +94,21 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
-      - uses: actions/KengoTODA/actions-setup-docker-compose@v1@v2
+      - uses: actions/KengoTODA/actions-setup-docker-compose@v1
         with:
           version: '2.14.2'
       - name: Use Node.js
         uses: actions/setup-node@v2
         with:
           node-version: "${{needs.build.outputs.NVMRC}}"
+      - name: Cache node_modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{runner.os}}-node-modules-${{hashFiles('**/package-lock.json')}} #ainsi le cache est invalide si le fichier package-lock.json change
+          restore-keys: |
+            ${{runner.os}}-node-modules-
+
       - run: |
           sudo apt-get update
           sudo apt-get install -y docker-compose
