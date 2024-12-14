@@ -38,9 +38,34 @@ jobs:
 
       - run: npm i
 
-  test:
-    needs: build
+  detect-changes:
     runs-on: ubuntu-latest
+    outputs:
+      run-test: ${{ steps.detect.outputs.run-test }}
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Get changed files
+        id: changes
+        run: |
+          echo "Checking for changes..."
+          CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }})
+          echo "Changed files: $CHANGED_FILES"
+          echo "::set-output name=files::$CHANGED_FILES"
+
+      - name: Determine if tests should run
+        id: detect
+        run: |
+          if echo "${{ steps.changes.outputs.files }}" | grep -qE '(^src/|^tests/)'; then
+            echo "::set-output name=run-test::true"
+          else
+            echo "::set-output name=run-test::false"
+          fi
+
+  test:
+    needs: [build, detect-changes]
+    runs-on: ubuntu-latest
+    if: needs.detect-changes.outputs.run-test == 'true'
     strategy:
       matrix:
         test-suite: [ "test", "test:nestjs", "test:mocha" ]
@@ -63,7 +88,6 @@ jobs:
           key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-modules-
-
 
       - name: Run ${{ matrix.test-suite }}
         run: npm run ${{ matrix.test-suite }}
