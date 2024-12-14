@@ -49,9 +49,17 @@ jobs:
         id: changes
         run: |
           echo "Checking for changes..."
-          CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }})
+          if [ "${{ github.event_name }}" = "push" ]; then
+            CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }})
+          elif [ "${{ github.event_name }}" = "pull_request" ]; then
+            CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }} origin/${{ github.head_ref }})
+          else
+            echo "Unsupported event: ${{ github.event_name }}"
+            exit 1
+          fi
           echo "Changed files: $CHANGED_FILES"
           echo "::set-output name=files::$CHANGED_FILES"
+      
 
       - name: Determine if tests should run
         id: detect
