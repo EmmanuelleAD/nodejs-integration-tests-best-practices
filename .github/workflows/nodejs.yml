@@ -56,7 +56,7 @@ jobs:
       - name: Determine if tests should run
         id: detect
         run: |
-          TEST_PATHS="^(example-application/|librairies/|src/|tests/|test/|package.json|tsconfig.json|jest.config.js|recipes/nestjs/)"
+          TEST_PATHS="^(example-application/|package.json|jest.config.js|recipes/)"
           if echo "${{ steps.changes.outputs.files }}" | grep -qE "$TEST_PATHS"; then
             echo "::set-output name=run-test::true"
           else
