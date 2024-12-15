@@ -51,11 +51,9 @@ jobs:
         id: changes
         run: |
           echo "Checking for changes..."
-          git fetch origin ${{ github.base_ref }} ${{ github.head_ref }}
-          CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }} origin/${{ github.head_ref }})
+          CHANGED_FILES=$(git diff --name-only @{u} ${{ github.sha }})
           echo "Changed files: $CHANGED_FILES"
           echo "CHANGED_FILES=$CHANGED_FILES" >> $GITHUB_ENV
-
       - name: Determine if tests should run
         id: detect
         run: |
