@@ -53,11 +53,12 @@ jobs:
       # NOTE: `since_last_remote_commit: true` is implied by default and falls back to the previous local commit.
 
       - name: List all changed files
-        env:
-          ALL_CHANGED_FILES: ${{ steps.detect-changes.outputs.all_changed_files }}
         run: |
-          echo "Changed files: $ALL_CHANGED_FILES"
-          echo "CHANGED_FILES=$ALL_CHANGED_FILES" >> $GITHUB_ENV
+          echo "Changed files:"
+          echo "${{ steps.changed-files.outputs.all_changed_files }}"
+        env:
+          CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
+
       - name: Determine if tests should run
         id: detect
         run: |
