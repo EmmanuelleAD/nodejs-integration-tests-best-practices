@@ -51,7 +51,7 @@ jobs:
         id: changes
         run: |
           echo "Checking for changes..."
-          CHANGED_FILES=$(git diff --name-only origin/main)
+          CHANGED_FILES=$(git diff --name-only origin/master)
           echo "Changed files: $CHANGED_FILES"
           echo "CHANGED_FILES=$CHANGED_FILES" >> $GITHUB_ENV
       - name: Determine if tests should run
