@@ -8,15 +8,6 @@ const MessageQueueClient = require('../libraries/message-queue-client');
 
 
 
-
-
-
-
-
-
-
-
-
 const axiosHTTPClient = axios.create();
 axiosRetry(axiosHTTPClient, { retries: 3 });
 
