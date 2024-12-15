@@ -48,12 +48,16 @@ jobs:
           fetch-depth: 0  # Clone complet pour récupérer l'historique des commits
 
       - name: Get changed files
-        id: changes
+        id: changed-files
+        uses: tj-actions/changed-files@v45
+      # NOTE: `since_last_remote_commit: true` is implied by default and falls back to the previous local commit.
+
+      - name: List all changed files
+        env:
+          ALL_CHANGED_FILES: ${{ steps.detect-changes.outputs.all_changed_files }}
         run: |
-          echo "Checking for changes..."
-          CHANGED_FILES=$(git diff HEAD~1..HEAD --name-only)
-          echo "Changed files: $CHANGED_FILES"
-          echo "CHANGED_FILES=$CHANGED_FILES" >> $GITHUB_ENV
+          echo "Changed files: $ALL_CHANGED_FILES"
+          echo "CHANGED_FILES=$ALL_CHANGED_FILES" >> $GITHUB_ENV
       - name: Determine if tests should run
         id: detect
         run: |
