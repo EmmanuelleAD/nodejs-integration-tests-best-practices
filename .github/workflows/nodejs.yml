@@ -51,17 +51,18 @@ jobs:
           echo "Checking for changes..."
           CHANGED_FILES=$(git diff --name-only @{u} ${{ github.sha }})
           echo "Changed files: $CHANGED_FILES"
-          echo "::set-output name=files::$CHANGED_FILES"
+          echo "CHANGED_FILES=$CHANGED_FILES" >> $GITHUB_ENV
 
       - name: Determine if tests should run
         id: detect
         run: |
           TEST_PATHS="^(example-application/|package.json|jest.config.js|recipes/)"
-          if echo "${{ steps.changes.outputs.files }}" | grep -qE "$TEST_PATHS"; then
-            echo "::set-output name=run-test::true"
+          if echo "$CHANGED_FILES" | grep -qE "$TEST_PATHS"; then
+            echo "run-test=true" >> $GITHUB_ENV
           else
-            echo "::set-output name=run-test::false"
-          fi
+            echo "run-test=false" >> $GITHUB_ENV
+        env:
+          CHANGED_FILES: ${{ env.CHANGED_FILES }}
 
   test:
     needs: [build, detect-changes]
