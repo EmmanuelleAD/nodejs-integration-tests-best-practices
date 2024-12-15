@@ -13,6 +13,8 @@
     "db:migrate": "cd example-application/data-access && sequelize-cli db:migrate",
     "db:seed": "cd example-application/data-access && sequelize-cli db:seed:all"
   },
+
+
   "author": "",
   "license": "ISC",
   "dependencies": {
