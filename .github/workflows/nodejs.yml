@@ -56,8 +56,7 @@ jobs:
         run: |
           echo "Changed files:"
           echo "${{ steps.changed-files.outputs.all_changed_files }}"
-        env:
-          CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
+          echo "CHANGED_FILES=${{ steps.changed-files.outputs.all_changed_files }}" >> $GITHUB_ENV
 
       - name: Determine if tests should run
         id: detect
