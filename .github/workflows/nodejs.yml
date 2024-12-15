@@ -64,11 +64,11 @@ jobs:
           TEST_PATHS="^(example-application/|src/|tests/|test/|package.json|tsconfig.json|jest.config.js|recipes/)"
           if [ -z "$CHANGED_FILES" ]; then
             echo "No changed files detected."
-            echo "run-test=false" >> $GITHUB_ENV
+            echo "run-test=false" >> $GITHUB_OUTPUT
           elif echo "$CHANGED_FILES" | grep -qE "$TEST_PATHS"; then
-            echo "run-test=true" >> $GITHUB_ENV
+            echo "run-test=true" >> $GITHUB_OUTPUT
           else
-            echo "run-test=false" >> $GITHUB_ENV
+            echo "run-test=false" >> $GITHUB_OUTPUT
           fi
         env:
           CHANGED_FILES: ${{ env.CHANGED_FILES }}
